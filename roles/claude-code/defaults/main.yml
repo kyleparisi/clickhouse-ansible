@@ -1,0 +1,4 @@
+---
+# Default variables for Claude Code installation
+claude_code_package: "@anthropic-ai/claude-code"
+claude_code_global_install: true

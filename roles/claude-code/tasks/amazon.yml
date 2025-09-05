@@ -1,0 +1,32 @@
+---
+- name: Install Node.js (required for Claude Code)
+  yum:
+    name: nodejs
+    state: present
+
+- name: Install npm (required for Claude Code)  
+  yum:
+    name: npm
+    state: present
+
+- name: Update npm to latest version
+  npm:
+    name: npm
+    global: yes
+    state: latest
+
+- name: Install Claude Code globally
+  npm:
+    name: "{{ claude_code_package }}"
+    global: "{{ claude_code_global_install }}"
+    state: present
+
+- name: Verify Claude Code installation
+  command: claude --version
+  register: claude_version
+  changed_when: false
+  failed_when: claude_version.rc != 0
+
+- name: Display Claude Code version
+  debug:
+    msg: "Claude Code installed successfully: {{ claude_version.stdout }}"
