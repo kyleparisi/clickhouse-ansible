@@ -1,6 +1,6 @@
-# Fresh Server 2
+# Clickhouse Ansible
 
-Automatically setup a github user on a server.
+Automatically setup a clickhouse server on a vm.
 
 ## Prerequisites
 

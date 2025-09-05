@@ -4,3 +4,4 @@
     name: "{{ clickhouse_container_name }}"
     state: started
     restart: yes
+  when: ansible_virtualization_type != "docker"

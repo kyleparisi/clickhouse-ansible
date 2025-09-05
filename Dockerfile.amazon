@@ -1,4 +1,4 @@
-FROM amazonlinux:2
+FROM amazonlinux:2023
 
 # Install Python 3, pip, and Ansible dependencies
 RUN yum update -y && yum install -y \

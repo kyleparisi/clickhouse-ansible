@@ -40,10 +40,21 @@
     mode: '0644'
   notify: restart clickhouse
 
+- name: Install Docker SDK for Python
+  pip:
+    name: docker
+
+- name: Start Docker service if not in container
+  service:
+    name: docker
+    state: started
+  when: ansible_virtualization_type != "docker"
+
 - name: Pull ClickHouse Docker image
   docker_image:
     name: "{{ clickhouse_docker_image }}:{{ clickhouse_version }}"
     source: pull
+  when: ansible_virtualization_type != "docker"
 
 - name: Run ClickHouse container
   docker_container:
@@ -65,3 +76,4 @@
       - "nofile:262144:262144"
     env:
       CLICKHOUSE_CONFIG: "/etc/clickhouse-server/config.xml"
+  when: ansible_virtualization_type != "docker"
