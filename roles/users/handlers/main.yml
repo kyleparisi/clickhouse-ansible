@@ -1,0 +1,8 @@
+---
+
+- name: sshd restarted
+  service:
+    name: "{{ 'ssh' if ansible_distribution == 'Ubuntu' else 'sshd' }}"
+    state: restarted
+  when: ansible_virtualization_type != "docker"
+  ignore_errors: yes

@@ -1,0 +1,67 @@
+- name: Create ClickHouse data directory
+  file:
+    path: "{{ clickhouse_data_dir }}"
+    state: directory
+    owner: "999"
+    group: "999"
+    mode: '0755'
+
+- name: Create ClickHouse logs directory
+  file:
+    path: "{{ clickhouse_logs_dir }}"
+    state: directory
+    owner: "999"
+    group: "999"
+    mode: '0755'
+
+- name: Create ClickHouse config directory
+  file:
+    path: "{{ clickhouse_config_dir }}"
+    state: directory
+    owner: "999"
+    group: "999"
+    mode: '0755'
+
+- name: Generate ClickHouse config
+  template:
+    src: config.xml.j2
+    dest: "{{ clickhouse_config_dir }}/config.xml"
+    owner: "999"
+    group: "999"
+    mode: '0644'
+  notify: restart clickhouse
+
+- name: Generate ClickHouse users config
+  template:
+    src: users.xml.j2
+    dest: "{{ clickhouse_config_dir }}/users.xml"
+    owner: "999"
+    group: "999"
+    mode: '0644'
+  notify: restart clickhouse
+
+- name: Pull ClickHouse Docker image
+  docker_image:
+    name: "{{ clickhouse_docker_image }}:{{ clickhouse_version }}"
+    source: pull
+
+- name: Run ClickHouse container
+  docker_container:
+    name: "{{ clickhouse_container_name }}"
+    image: "{{ clickhouse_docker_image }}:{{ clickhouse_version }}"
+    state: started
+    restart_policy: unless-stopped
+    memory: "{{ clickhouse_memory_limit }}"
+    ports:
+      - "{{ clickhouse_port }}:8123"
+      - "{{ clickhouse_native_port }}:9000"
+      - "{{ clickhouse_interserver_port }}:9009"
+    volumes:
+      - "{{ clickhouse_data_dir }}:/var/lib/clickhouse:rw"
+      - "{{ clickhouse_logs_dir }}:/var/log/clickhouse-server:rw"
+      - "{{ clickhouse_config_dir }}/config.xml:/etc/clickhouse-server/config.xml:ro"
+      - "{{ clickhouse_config_dir }}/users.xml:/etc/clickhouse-server/users.xml:ro"
+    ulimits:
+      - "nofile:262144:262144"
+    env:
+      CLICKHOUSE_CONFIG: "/etc/clickhouse-server/config.xml"

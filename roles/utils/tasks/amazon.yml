@@ -1,0 +1,8 @@
+---
+- name: Install utility system packages
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - jq
+      - ruby

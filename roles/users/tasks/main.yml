@@ -1,0 +1,28 @@
+---
+
+- user:
+    name: "{{ github_user }}"
+    shell: /bin/bash
+
+- authorized_key:
+    user: "{{ github_user }}"
+    key: "https://github.com/{{ github_user }}.keys"
+
+- lineinfile:
+    dest: "/etc/sudoers.d/{{ github_user }}"
+    create: yes
+    line: "{{ github_user }} ALL=(ALL) NOPASSWD:ALL"
+
+- lineinfile:
+    dest: /etc/ssh/sshd_config
+    create: no
+    line: 'AcceptEnv AWS_*'
+
+- name: test sshd
+  shell: sshd -t
+  notify:
+    - sshd restarted
+
+- copy:
+    src: known_hosts
+    dest: "/home/{{ github_user }}/.ssh/"

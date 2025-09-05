@@ -1,0 +1,6 @@
+---
+- name: restart clickhouse
+  docker_container:
+    name: "{{ clickhouse_container_name }}"
+    state: started
+    restart: yes

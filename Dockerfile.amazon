@@ -1,0 +1,31 @@
+FROM amazonlinux:2
+
+# Install Python 3, pip, and Ansible dependencies
+RUN yum update -y && yum install -y \
+    python3 \
+    python3-pip \
+    openssh-clients \
+    openssh-server \
+    git \
+    sudo \
+    which \
+    && yum clean all
+
+# Install Ansible
+RUN pip3 install ansible
+
+# Create a test user (like centos user on EC2)
+RUN useradd -m -s /bin/bash centos && \
+    echo 'centos ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Create SSH privilege separation directory and generate host keys
+RUN mkdir -p /run/sshd && ssh-keygen -A
+
+# Copy the playbook and roles
+COPY . /ansible
+
+# Set working directory
+WORKDIR /ansible
+
+# Entry point to run the playbook
+CMD ["ansible-playbook", "playbook.yml"]
