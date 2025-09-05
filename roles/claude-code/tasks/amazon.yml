@@ -1,19 +1,24 @@
 ---
-- name: Install Node.js (required for Claude Code)
+- name: Install curl for NodeSource setup
+  yum:
+    name: curl
+    state: present
+
+- name: Download NodeSource setup script for Node.js 20.x
+  get_url:
+    url: https://rpm.nodesource.com/setup_20.x
+    dest: /tmp/nodesource_setup.sh
+    mode: '0755'
+
+- name: Run NodeSource setup script
+  shell: /tmp/nodesource_setup.sh
+  args:
+    creates: /etc/yum.repos.d/nodesource-el8.repo
+
+- name: Install Node.js 20.x (required for Claude Code)
   yum:
     name: nodejs
     state: present
-
-- name: Install npm (required for Claude Code)  
-  yum:
-    name: npm
-    state: present
-
-- name: Update npm to latest version
-  npm:
-    name: npm
-    global: yes
-    state: latest
 
 - name: Install Claude Code globally
   npm:

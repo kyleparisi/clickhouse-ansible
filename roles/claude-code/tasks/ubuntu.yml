@@ -1,20 +1,25 @@
 ---
-- name: Install Node.js (required for Claude Code)
+- name: Install curl for NodeSource setup
+  apt:
+    name: curl
+    state: present
+    update_cache: yes
+
+- name: Add NodeSource GPG key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name: Add NodeSource repository for Node.js 20.x
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_20.x {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Install Node.js 20.x (required for Claude Code)
   apt:
     name: nodejs
     state: present
     update_cache: yes
-
-- name: Install npm (required for Claude Code)
-  apt:
-    name: npm
-    state: present
-
-- name: Update npm to latest version
-  npm:
-    name: npm
-    global: yes
-    state: latest
 
 - name: Install Claude Code globally
   npm:
